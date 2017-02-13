@@ -1,0 +1,31 @@
+@import url("https://fonts.googleapis.com/css?family=Slabo+27px");
+body {
+  font-family: "Slabo 27px";
+}
+
+.bar {
+  z-index: 2;
+}
+
+.bar:hover {
+  fill: lightgreen;
+}
+
+.title {
+  color: green;
+  font-size: 27px;
+}
+
+svg {
+  width: 100%;
+}
+
+.tooltip {
+  z-index: 10;
+  position: absolute;
+  text-align: center;
+  background: black;
+  padding: 10px;
+  color: white;
+  border-radius: 10px;
+}
