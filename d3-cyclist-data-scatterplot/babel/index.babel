@@ -1,0 +1,159 @@
+
+//enter data
+d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json', (error, data)=> {
+  let time=[]
+let place=[]
+  data.forEach((item)=> {
+    time.push(item.Seconds)
+    place.push(item.Place)
+  })
+ 
+  
+
+//general setup
+let margin = {top: 50, right: 80, bottom: 100, left: 50}
+let padding = 10;
+function calcWidth() {
+  console.log(window.innerWidth)
+  if (window.innerWidth > 1000) {
+    return 900
+  }
+ return window.innerWidth;
+}
+const width = calcWidth() - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+//add graph to body of webpage
+let svg = d3.select('body')
+  .append('svg')
+  .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//x scale
+let xScale = d3.scaleTime()
+             .domain(d3.extent(time))
+          .range([width, 0])
+          
+
+//y scale
+let yScale = d3.scaleLinear()
+               .domain(d3.extent(place).reverse())
+               .range([height, 0])
+
+//tooltip
+let tooltip = d3.select('body').append('g')
+      .attr('class', 'tooltip')
+      .style('bottom', '10%')
+      .style('visibility', 'hidden')
+	    
+
+//add data to graph
+let node = svg.selectAll('g')
+  .data(data)
+  .enter()
+  .append('g')
+
+node.append('circle')
+  .attr('class', 'circle')
+  .attr('r', 3.5)
+  .attr('cx', ((d,i)=>xScale(d.Seconds)))
+  .attr('cy', ((d)=>yScale(d.Place)))
+  .style('fill', ((d)=>{ 
+    if (d.Doping == "") {return 'black'}
+    else { return 'red' }                }))
+  .on('mouseover'||'click', (d, i)=>{   
+      tooltip.style('visibility', 'visible')
+     .html(
+     '<p>Name: '+d.Name+'<br/>Year: '+d.Year+'<br/>Country: '+d.Nationality+'<br/>Time: '+d.Time+'<br/>Alleged: '+d.Doping+'</p>'
+)
+})
+  .on('mouseout', ()=>{
+  console.log('away')
+  tooltip.style('visibility', 'hidden')
+})
+  
+node.append('text')
+  .attr('class', 'names')
+  .attr('x', (d, i)=>xScale(d.Seconds)+5)
+  .attr('y', (d, i)=>yScale(d.Place)+5)
+  .text((d)=>d.Name)
+
+//x-axis
+svg.append('g')
+   .call(d3.axisBottom(xScale)
+   .tickFormat(d=>(d3.min(time)-d)))
+   .attr("transform", "translate(0,"+(height+padding)+")")
+  
+svg.append('text')
+  .attr('x', 0)
+  .attr('y', -20)
+  .attr('text-anchor', 'end')
+  .style('font-size', '11')
+  .text('Place')
+  .attr('transform','rotate(-90)')
+   
+//y-axis
+let yAxis = svg.append('g')
+   .call(d3.axisLeft(yScale)
+   .ticks(8))
+   .attr("transform", "translate("+(-padding)+",0)")
+
+svg.append('text')
+  .attr('x', width)
+  .attr('y', height+40)
+  .style('font-size', '11')
+  .attr('text-anchor', 'end')
+  .text('Seconds Behind Fastest Sprint')
+
+   
+//legend
+let legend = svg.append('g')
+  let legX = width-200,
+      legY = height-250
+
+  let legendData = [
+    {
+     'color':'red',
+     'label': 'Riders with doping allegations'
+    },
+    {
+     'color':'black',
+     'label': 'Riders with no doping allegations'
+    }
+  ]
+  
+  legend.append('text')
+  .attr('x', legX)
+  .attr('y', legY)
+  .text("Legend")
+ 
+  legend.selectAll('.legend')
+  .data(legendData)
+  .enter()
+  .append('circle')
+  .attr('cx', (d,i)=>legX + 20)
+  .attr('cy', (d,i)=>legY+ 20 + 20*i)
+  .attr('r', 4)
+  .style('fill', (d)=>d.color)
+  
+    
+  legend.selectAll('.label')
+  .data(legendData)
+  .enter()
+  .append('text')
+  .attr('class', 'names')
+  .attr('x', (d, i)=> legX + 35)
+  .attr('y', (d, i)=> legY +23 +20*i)
+  .text((d)=>d.label)
+  
+//title
+  svg.append('text')
+         .attr('x', width/2)
+         .attr('y', 0)
+         .attr('class', 'title')
+         .attr('text-anchor', 'middle')
+         .text('Fastest Cyclist Sprints - Alpe D\'Huez')
+   
+})
