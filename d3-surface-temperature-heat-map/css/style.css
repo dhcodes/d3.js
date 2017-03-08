@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css?family=Supermercado+One");
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Supermercado One", cursive;
+}
+
+.title, svg {
+  align-self: center;
+}
+
+.title {
+  margin-top: 20px;
+  margin-bottom: -100px;
+  line-height: 20px;
+}
+
+.tooltip {
+  position: absolute;
+  margin: auto;
+  color: black;
+  right: 10vw;
+  top: 15vw;
+  z-index: 2;
+  background-color: rgba(230, 230, 230, 0.5);
+  padding: 5px 10px;
+  border-radius: 10px;
+}
